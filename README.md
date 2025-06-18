@@ -1,16 +1,17 @@
-# 🛒 Product CRUD API
+# 🛒 Product CRUD API with Image Uploads
 
-A simple RESTful API built with **Node.js**, **Express**, and **MongoDB** using **Mongoose**. This API allows you to **Create**, **Read**, **Update**, and **Delete** (CRUD) products in a MongoDB database.
+A simple RESTful API built with **Node.js**, **Express**, **MongoDB**, and **Cloudinary**. This API allows you to **Create**, **Read**, **Update**, and **Delete** (CRUD) products in a MongoDB database, with support for image uploads to the cloud.
 
 ---
 
 ## 📦 Features
 
-- Add new products
+- Add new products with images
 - Get a list of all products
 - Get a specific product by ID
 - Update a product by ID
 - Delete a product by ID
+- Cloud-based image storage via Cloudinary
 
 ---
 
@@ -20,6 +21,8 @@ A simple RESTful API built with **Node.js**, **Express**, and **MongoDB** using 
 - [Express](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
 - [Mongoose](https://mongoosejs.com/)
+- [Cloudinary](https://cloudinary.com/) – for image storage
+- [Multer](https://github.com/expressjs/multer) – for handling `multipart/form-data`
 
 ---
 
@@ -29,6 +32,8 @@ A simple RESTful API built with **Node.js**, **Express**, and **MongoDB** using 
 ├── index.js # Main server file with all routes
 ├── models/
 │ └── product.model.js # Mongoose schema for Product
+├── middleware/
+│ └── upload.js # Multer config & Cloudinary integration
 ├── package.json
 └── README.md
 
@@ -44,44 +49,44 @@ A simple RESTful API built with **Node.js**, **Express**, and **MongoDB** using 
 git clone https://github.com/malombe-dev/product-crud-api.git
 cd product-crud-api
 2. Install dependencies
-
+bash
+Copy
+Edit
 npm install
+3. Add Environment Variables
+Create a .env file in the root and add the following:
 
-3. Add MongoDB connection string
-Update the mongoose.connect(...) URI in index.js with your own MongoDB URI or use the provided connection string if you're using the same database.
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+MONGO_URI=your_mongo_connection_string
+Replace with your actual Cloudinary credentials and MongoDB URI.
 
 4. Run the server
 
-node index.js
-Or use nodemon (recommended for development):
+npm run dev
 
 
-npx nodemon index.js
+
 📬 API Endpoints
 Method	Endpoint	Description
 GET	/	Welcome message
-POST	/api/products	Create a new product
+POST	/api/products	Create a new product with image (form-data)
 GET	/api/products	Get all products
 GET	/api/products/:id	Get a product by ID
 PUT	/api/products/:id	Update a product by ID
 DELETE	/api/products/:id	Delete a product by ID
 
-📌 Sample Product Object
-
-{
-  "name": "Sample Product",
-  "quantity": 10,
-  "price": 29.99,
-  "image": "https://example.com/image.jpg"
-}
 🧪 Testing with Postman
-You can test the API endpoints using Postman or any other API client. Just make sure your server is running on http://localhost:3000.
+When creating a product, use POST /api/products with form-data in Postman.
 
-✅ License
-This project is open-source and free to use.
+Fields:
 
-👨‍💻 Author
-Vincent Malombe
-Feel free to connect and contribute!
+name (string)
 
+quantity (number)
 
+price (number)
+
+image (file)
