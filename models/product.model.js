@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { GiQuakeStomp } = require("react-icons/gi");
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -23,11 +23,12 @@ const productSchema = new mongoose.Schema(
     image: {
       type: String,
       required: false,
+      trim: true,
       validate: {
         validator: function (v) {
-          return /^(http|https):\/\/[^ "]+$/.test(v);
+          return /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif|bmp|svg)$/i.test(v);
         },
-        message: (props) => `${props.value} is not a valid URL!`,
+        message: (props) => `${props.value} is not a valid image URL!`,
       },
     },
   },

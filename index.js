@@ -1,16 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Product = require('./models/product.model');
-
+const multer = require('multer');
+const { storage } = require('./utils/cloudinary');
+require('dotenv').config();
 
 const app = express();
+const upload = multer({ storage }); // Upload images to Cloudinary
 
-// Middleware to parse JSON
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://admin:malombe@backed.u0nvukg.mongodb.net/NodeAPI?retryWrites=true&w=majority&appName=backed')
+// ✅ MongoDB connection (use fallback if .env not set)
+const mongoURI = process.env.MONGO_URI || 'mongodb+srv://admin:malombe@backed.u0nvukg.mongodb.net/NodeAPI?retryWrites=true&w=majority&appName=backed';
+
+mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
@@ -19,20 +24,20 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-
-// 🚀 CRUD ROUTES
-
-// CREATE a new product
-app.post('/api/products', async (req, res) => {
+// 🚀 CREATE product with image
+app.post('/api/products', upload.single('image'), async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const { name, price, quantity } = req.body;
+    const image = req.file?.path;
+
+    const product = await Product.create({ name, price, quantity, image });
     res.status(201).json(product);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// READ all products
+// 📥 READ all products
 app.get('/api/products', async (req, res) => {
   try {
     const products = await Product.find();
@@ -42,7 +47,7 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-// READ a single product by ID
+// 📥 READ one product
 app.get('/api/products/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -53,7 +58,7 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
-// UPDATE a product by ID
+// 🔁 UPDATE product
 app.put('/api/products/:id', async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(
@@ -68,7 +73,7 @@ app.put('/api/products/:id', async (req, res) => {
   }
 });
 
-// DELETE a product by ID
+// ❌ DELETE product
 app.delete('/api/products/:id', async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
@@ -79,7 +84,7 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// Start server
+// ✅ Start server
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
